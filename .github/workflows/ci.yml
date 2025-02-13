@@ -22,4 +22,4 @@ jobs:
       # Step 3: Build the Docker image (no push to Docker Hub)
       - name: Build Docker image
         run: |
-          docker build -t $IMAGENAME .
+          docker build -t ${{IMAGENAME}} .
