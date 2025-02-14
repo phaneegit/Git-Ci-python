@@ -3,7 +3,7 @@ name: Build and Push Flask App to GHCR
 on:
   push:
     branches:
-      - main
+      - main  # Change if needed
 
 jobs:
   build-and-push:
@@ -22,8 +22,16 @@ jobs:
 
       - name: Build Docker Image
         run: |
+<<<<<<< HEAD
           docker build -t ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}:latest .
 
       - name: Push Docker Image to GHCR
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}:latest
+=======
+          docker build -t ghcr.io/${{ github.repository_owner }}/flask-app:latest .
+
+      - name: Push Docker Image to GHCR
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/flask-app:latest
+>>>>>>> ea6e898 (push to GHCR)
