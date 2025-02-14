@@ -1,25 +1,29 @@
-name: Build Docker Image
+name: Build and Push Flask App to GHCR
 
-# Trigger the workflow on push to the 'main' branch
 on:
   push:
     branches:
-      - main
+      - main  # Change if needed
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read  # Allows reading repository content
+      packages: write  # Allows pushing to GHCR
+
     steps:
-      # Step 1: Checkout the code from the repository
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Docker Buildx (for building Docker images)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
 
-      # Step 3: Build the Docker image (no push to Docker Hub)
-      - name: Build Docker image
+      - name: Build Docker Image
         run: |
-          docker build -t ${{IMAGENAME}} .
+          docker build -t ghcr.io/${{ github.repository_owner }}/flask-app:latest .
+
+      - name: Push Docker Image to GHCR
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/flask-app:latest
