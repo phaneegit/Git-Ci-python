@@ -38,18 +38,14 @@ jobs:
 
       - name: Notify Microsoft Teams on Success
         if: success()
-        uses: doru1004/teams-notify@v1
+        uses: Ilshidur/action-slack@master
         with:
-          webhook_url: ${{ secrets.TEAMS_WEBHOOK }}
-          title: "✅ Build and Push Successful"
-          message: "Docker image $IMAGE_NAME:${{ github.event.inputs.image_tag }} has been successfully pushed to GHCR."
-          theme_color: "00FF00"
+          webhook: ${{ secrets.TEAMS_WEBHOOK }}
+          text: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:${{ github.event.inputs.image_tag }}` successfully pushed to GHCR."
 
       - name: Notify Microsoft Teams on Failure
         if: failure()
-        uses: doru1004/teams-notify@v1
+        uses: Ilshidur/action-slack@master
         with:
-          webhook_url: ${{ secrets.TEAMS_WEBHOOK }}
-          title: "❌ Build and Push Failed"
-          message: "Build and push to GHCR failed. Please check the logs."
-          theme_color: "FF0000"
+          webhook: ${{ secrets.TEAMS_WEBHOOK }}
+          text: "❌ *GitHub Actions:* Build & Push Failed!\n\nPlease check the logs."
