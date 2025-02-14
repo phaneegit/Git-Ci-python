@@ -1,37 +1,55 @@
-name: Build and Push Flask App to GHCR
+name: Build and Push to GHCR
 
 on:
   push:
     branches:
       - main
       - test
-  workflow_dispatch:  # 👈 Enables manual triggering
+  workflow_dispatch:
     inputs:
-      image_name:
-        description: 'Docker Image Name'
-        required: false
-        default: 'ghcr.io/phaneegit/my-app'
       image_tag:
         description: 'Docker Image Tag'
         required: false
         default: 'latest'
 
+env:
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+
+permissions:
+  contents: read
+  packages: write  # Required for pushing to GHCR
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ${{ github.event.inputs.image_name || 'ghcr.io/phaneegit/my-app' }}
-      IMAGE_TAG: ${{ github.event.inputs.image_tag || 'latest' }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u USERNAME --password-stdin
+      - name: Log in to GitHub Container Registry (GHCR)
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "${{ secrets.GITHUB_ACTOR }}" --password-stdin
 
-      - name: Build and Tag Docker Image
-        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:${{ github.event.inputs.image_tag }} .
 
-      - name: Push Image to GHCR
-        run: docker push $IMAGE_NAME:$IMAGE_TAG
+      - name: Push Docker Image to GHCR
+        run: docker push $IMAGE_NAME:${{ github.event.inputs.image_tag }}
+
+      - name: Notify Microsoft Teams on Success
+        if: success()
+        uses: doru1004/teams-notify@v1
+        with:
+          webhook_url: ${{ secrets.TEAMS_WEBHOOK }}
+          title: "✅ Build and Push Successful"
+          message: "Docker image $IMAGE_NAME:${{ github.event.inputs.image_tag }} has been successfully pushed to GHCR."
+          theme_color: "00FF00"
+
+      - name: Notify Microsoft Teams on Failure
+        if: failure()
+        uses: doru1004/teams-notify@v1
+        with:
+          webhook_url: ${{ secrets.TEAMS_WEBHOOK }}
+          title: "❌ Build and Push Failed"
+          message: "Build and push to GHCR failed. Please check the logs."
+          theme_color: "FF0000"
