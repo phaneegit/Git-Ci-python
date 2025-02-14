@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello,Welcome to git!"
+    return "Hello,Welcome to Git_CI!"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
