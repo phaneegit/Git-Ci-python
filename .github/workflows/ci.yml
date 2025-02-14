@@ -3,28 +3,35 @@ name: Build and Push Flask App to GHCR
 on:
   push:
     branches:
-      - main  # Change if needed
+      - main
       - test
+  workflow_dispatch:  # 👈 Enables manual triggering
+    inputs:
+      image_name:
+        description: 'Docker Image Name'
+        required: false
+        default: 'ghcr.io/phaneegit/my-app'
+      image_tag:
+        description: 'Docker Image Tag'
+        required: false
+        default: 'latest'
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read  # Allows reading repository content
-      packages: write  # Allows pushing to GHCR
+    env:
+      IMAGE_NAME: ${{ github.event.inputs.image_name || 'ghcr.io/phaneegit/my-app' }}
+      IMAGE_TAG: ${{ github.event.inputs.image_tag || 'latest' }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u USERNAME --password-stdin
 
-      - name: Build Docker Image
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}:latest .
+      - name: Build and Tag Docker Image
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
-      - name: Push Docker Image to GHCR
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}:latest
-
+      - name: Push Image to GHCR
+        run: docker push $IMAGE_NAME:$IMAGE_TAG
