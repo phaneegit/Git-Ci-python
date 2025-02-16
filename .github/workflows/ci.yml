@@ -18,9 +18,9 @@ on:
 env:
   SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
 
-permissions:
-  contents: read
-  packages: write
+#permissions:
+ # contents: read
+  #packages: write
 
 jobs:
   build-and-push:
