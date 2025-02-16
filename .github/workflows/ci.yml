@@ -14,11 +14,11 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/${{ secrets.IMAGE_NAME }}
-  SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}  # Microsoft Teams Webhook
+  SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
 
 permissions:
   contents: read
-  packages: write  # Required for pushing to GHCR
+  packages: write
 
 jobs:
   build-and-push:
@@ -32,13 +32,13 @@ jobs:
         run: echo "IMAGE_NAME is: $IMAGE_NAME"
 
       - name: Log in to GitHub Container Registry (GHCR)
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t $IMAGE_NAME:${{ github.event.inputs.image_tag }} .
+        run: docker build -t $IMAGE_NAME:${{ github.event.inputs.image_tag || 'latest' }} .
 
       - name: Push Docker Image to GHCR
-        run: docker push $IMAGE_NAME:${{ github.event.inputs.image_tag }}
+        run: docker push $IMAGE_NAME:${{ github.event.inputs.image_tag || 'latest' }}
 
       - name: Notify Microsoft Teams on Success
         if: success()
@@ -46,7 +46,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
         with:
-          args: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:${{ github.event.inputs.image_tag }}` successfully pushed to GHCR."
+          args: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:${{ github.event.inputs.image_tag || 'latest' }}` successfully pushed to GHCR."
 
       - name: Notify Microsoft Teams on Failure
         if: failure()
