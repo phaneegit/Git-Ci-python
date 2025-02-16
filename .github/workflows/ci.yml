@@ -9,10 +9,10 @@ on:
     inputs:
       image_name:
         description: 'Docker Image Name'
-        required: false
+        required: true
       image_tag:
         description: 'Docker Image Tag'
-        required: false
+        required: true
         default: 'latest'
 
 env:
