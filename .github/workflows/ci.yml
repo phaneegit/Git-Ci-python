@@ -30,6 +30,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract version from version.py
+        id: get_version
+        run: echo "VERSION=$(grep 'VERSION' version.py | cut -d '=' -f2 | tr -d ' \"')" >> $GITHUB_ENV
+
       - name: Extract Commit SHA
         run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
