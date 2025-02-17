@@ -18,10 +18,6 @@ on:
 env:
   SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
 
-#permissions:
- # contents: read
-  #packages: write
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -50,13 +46,11 @@ jobs:
 
       - name: Build Docker Image with Commit SHA
         run: |
-          IMAGE_TAG=${{ github.event.inputs.image_tag || 'latest' }}
-          docker build -t $IMAGE_NAME:$IMAGE_TAG-$SHORT_SHA .
+          docker build -t $IMAGE_NAME:$VERSION-$SHORT_SHA .
 
       - name: Push Docker Image to GHCR
         run: |
-          IMAGE_TAG=${{ github.event.inputs.image_tag || 'latest' }}
-          docker push $IMAGE_NAME:$IMAGE_TAG-$SHORT_SHA
+          docker push $IMAGE_NAME:$VERSION-$SHORT_SHA
 
       - name: Notify Microsoft Teams on Success
         if: success()
@@ -64,7 +58,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
         with:
-          args: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:${{ github.event.inputs.image_tag || 'latest' }}-$SHORT_SHA` successfully pushed to GHCR."
+          args: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:$VERSION-$SHORT_SHA` successfully pushed to GHCR."
 
       - name: Notify Microsoft Teams on Failure
         if: failure()
