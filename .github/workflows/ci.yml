@@ -5,18 +5,18 @@ on:
     branches:
       - main
       - test
-  workflow_dispatch:
-    inputs:
-      image_name:
-        description: 'Docker Image Name'
-        required: false
-      image_tag:
-        description: 'Docker Image Tag (Version)'
-        required: false
-        default: 'latest'
+#  workflow_dispatch:
+ #   inputs:
+  #    image_name:
+   #     description: 'Docker Image Name'
+    #    required: false
+     # image_tag:
+      #  description: 'Docker Image Tag (Version)'
+       # required: false
+        #default: 'latest'
 
-env:
-  SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
+#env:
+ # SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
 
 jobs:
   build-and-push:
