@@ -15,8 +15,8 @@ on:
        # required: false
         #default: 'latest'
 
-#env:
- # SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
+env:
+  SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
 
 jobs:
   build-and-push:
@@ -55,15 +55,15 @@ jobs:
       - name: Notify Microsoft Teams on Success
         if: success()
         uses: Ilshidur/action-slack@master
-        env:
-          SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
+ #       env:
+  #        SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
         with:
           args: "✅ *GitHub Actions:* Build & Push Successful!\n\n*Image:* `$IMAGE_NAME:$VERSION-$SHORT_SHA` successfully pushed to GHCR."
 
       - name: Notify Microsoft Teams on Failure
         if: failure()
         uses: Ilshidur/action-slack@master
-        env:
-          SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
+   #     env:
+    #      SLACK_WEBHOOK: ${{ secrets.TEAMS_WEBHOOK }}
         with:
           args: "❌ *GitHub Actions:* Build & Push Failed!\n\nPlease check the logs."
